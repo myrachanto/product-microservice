@@ -58,12 +58,12 @@ func StoreApi() {
 		SigningMethod: "HS256",
 		SigningKey:    []byte(open.Key),
 	}))
-	front := e.Group("/front")
-	front.POST("/register", controllers.ProductController.Create)
-	front.GET("/user/:id", controllers.ProductController.GetOne)
-	front.GET("/users", controllers.ProductController.GetAll)
-	JWTgroup.PUT("users/:id", controllers.ProductController.Update)
-	JWTgroup.DELETE("users/:id", controllers.ProductController.Delete)
+	e.POST("/create", controllers.ProductController.Create)
+	e.GET("/product/:id", controllers.ProductController.GetOne)
+	e.GET("/products/:code", controllers.ProductController.GetOnebyCode)
+	e.GET("/products", controllers.ProductController.GetAll)
+	JWTgroup.PUT("product/:id", controllers.ProductController.Update)
+	JWTgroup.DELETE("product/:id", controllers.ProductController.Delete)
 	//e.DELETE("loggoutall/:id", controllers.ProductController.DeleteALL) logout all accounts
 
 	// Start server

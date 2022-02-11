@@ -27,6 +27,7 @@ type productcontrollerInterface interface {
 	GetAll(c echo.Context) error
 	Update(c echo.Context) error
 	Delete(c echo.Context) error
+	GetOnebyCode(c echo.Context) error
 }
 
 func NewproductController(ser service.ProductServiceInterface) productcontrollerInterface {
@@ -110,6 +111,14 @@ func (controller productController) GetOne(c echo.Context) error {
 		return c.JSON(httperror.Code(), httperror)
 	}
 	result, problem := service.ProductService.GetOne(id)
+	if problem != nil {
+		return c.JSON(problem.Code(), problem)
+	}
+	return c.JSON(http.StatusOK, result)
+}
+func (controller productController) GetOnebyCode(c echo.Context) error {
+	code := c.Param("code")
+	result, problem := service.ProductService.GetOnebyCode(code)
 	if problem != nil {
 		return c.JSON(problem.Code(), problem)
 	}

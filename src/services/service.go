@@ -19,6 +19,7 @@ type ProductServiceInterface interface {
 	GetAll(search string, page, pagesize int) ([]model.Product, httperors.HttpErr)
 	Update(id int, product *model.Product) (*model.Product, httperors.HttpErr)
 	Delete(id int) (string, httperors.HttpErr)
+	GetOnebyCode(code string) (*model.Product, httperors.HttpErr)
 }
 
 type productService struct {
@@ -44,6 +45,13 @@ func (service productService) Create(product *model.Product) (string, httperors.
 }
 func (service productService) GetOne(code int) (*model.Product, httperors.HttpErr) {
 	product, err1 := r.Productrepo.GetOne(code)
+	if err1 != nil {
+		return nil, err1
+	}
+	return product, nil
+}
+func (service productService) GetOnebyCode(code string) (*model.Product, httperors.HttpErr) {
+	product, err1 := r.Productrepo.GetOnebyCode(code)
 	if err1 != nil {
 		return nil, err1
 	}

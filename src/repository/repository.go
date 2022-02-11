@@ -22,6 +22,7 @@ type ProductRepoInterface interface {
 	Create(product *model.Product) (string, httperors.HttpErr)
 	all() (t []model.Product, r httperors.HttpErr)
 	GetOne(id int) (*model.Product, httperors.HttpErr)
+	GetOnebyCode(id string) (*model.Product, httperors.HttpErr)
 	productExistbycode(code string) bool
 	productbycode(code string) *model.Product
 	GetAll(search string, page, pagesize int) ([]model.Product, httperors.HttpErr)
@@ -94,6 +95,21 @@ func (productRepo productrepo) GetOne(id int) (*model.Product, httperors.HttpErr
 	}
 
 	GormDB.Model(&product).Where("id = ?", id).First(&product)
+	IndexRepo.DbClose(GormDB)
+	return &product, nil
+}
+func (productRepo productrepo) GetOnebyCode(code string) (*model.Product, httperors.HttpErr) {
+	ok := productRepo.productExistbycode(code)
+	if !ok {
+		return nil, httperors.NewNotFoundError("product with that code does not exists!")
+	}
+	product := model.Product{}
+	GormDB, err1 := IndexRepo.Getconnected()
+	if err1 != nil {
+		return nil, err1
+	}
+
+	GormDB.Model(&product).Where("productcode = ?", code).First(&product)
 	IndexRepo.DbClose(GormDB)
 	return &product, nil
 }
