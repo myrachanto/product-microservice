@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	httperors "github.com/myrachanto/custom-http-error"
+	pubsub "github.com/myrachanto/microservice/product/src/events"
 	"github.com/myrachanto/microservice/product/src/model"
 )
 
@@ -51,6 +52,8 @@ func (productRepo productrepo) Create(product *model.Product) (string, httperors
 	product.Productcode = code
 	GormDB.Create(&product)
 	IndexRepo.DbClose(GormDB)
+	//pub sub the information about the product creation being filed up
+	pubsub.Produce("product_topic", "Product_created", product)
 	return "product created successifully", nil
 }
 func (productRepo productrepo) all() (t []model.Product, r httperors.HttpErr) {
@@ -196,6 +199,8 @@ func (productRepo productrepo) Update(id int, product *model.Product) (*model.Pr
 	GormDB.Save(&product)
 
 	IndexRepo.DbClose(GormDB)
+	//pub sub the information about the product updated being filed up
+	pubsub.Produce("product_topic", "Product_updated", product)
 
 	return product, nil
 }
@@ -212,6 +217,8 @@ func (productRepo productrepo) Delete(id int) (string, httperors.HttpErr) {
 	GormDB.Model(&product).Where("id = ?", id).First(&product)
 	GormDB.Delete(product)
 	IndexRepo.DbClose(GormDB)
+	//pub sub the information about the product deleted being filed up
+	pubsub.Produce("product_topic", "deleted_created", id)
 	return "deleted successfully", nil
 }
 func (productRepo productrepo) productExist(email string) bool {

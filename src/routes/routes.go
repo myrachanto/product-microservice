@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/myrachanto/microservice/product/src/controllers"
+	pubsub "github.com/myrachanto/microservice/product/src/events"
 	"github.com/myrachanto/microservice/product/src/repository"
 	service "github.com/myrachanto/microservice/product/src/services"
 
@@ -45,6 +46,9 @@ func StoreApi() {
 	//check db connection//////////////////////
 	fmt.Println("initialization----------------")
 	controllers.NewproductController(service.NewproductService(repository.NewproductRepo()))
+
+	//initialize the pub/sub
+	pubsub.SetupProducer()
 	e := echo.New()
 
 	e.Static("/", "public")
